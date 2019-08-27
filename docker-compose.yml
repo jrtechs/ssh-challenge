@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+    ssh1:
+        build: ./sshBox1
+        ports:
+            - "8888:22"
+        container_name: ssh1
+        links:
+            - "ssh2:sshbox"
+    ssh2:
+        build: ./sshBox1
+        container_name: ssh2
