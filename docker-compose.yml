@@ -9,5 +9,5 @@ services:
         links:
             - "ssh2:sshbox"
     ssh2:
-        build: ./sshBox1
+        build: ./sshBox2
         container_name: ssh2

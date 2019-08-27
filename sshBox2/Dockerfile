@@ -17,25 +17,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 # Adds a dummy user to ssh into
-RUN useradd -ms /bin/bash ritlug1
-RUN echo ritlug1:password21 | chpasswd
+RUN useradd -ms /bin/bash ritlug2
+RUN echo ritlug2:hidden003 | chpasswd
 
 # adds our infinite run ssh server script
 RUN mkdir -p /var/run/sshd
 COPY bin/* /usr/local/bin/
 
 # Copies the hint into the home director of user
-COPY hint.md /home/ritlug1
-COPY ssh/* /home/ritlug1/
+COPY hint.md /home/ritlug2
+RUN mkdir -p /home/ritlug2/.ssh/
+RUN chown ritlug2:ritlug2 /home/ritlug2/.ssh
+RUN touch /home/ritlug2/.ssh/authorized_keys
+RUN chmod 700 /home/ritlug2/.ssh
+RUN chmod 664 /home/ritlug2/.ssh/authorized_keys
+COPY ssh/* /home/ritlug2/.ssh
 
-RUN touch /home/ritlug1/id_rsa.pub
-RUN touch /home/ritlug1/id_rsa
-RUN chmod 600 /home/ritlug1/id_rsa
-RUN chmod 644 /home/ritlug1/id_rsa.pub
-RUN chown ritlug1:ritlug1 /home/ritlug1/id_rsa
-RUN chown ritlug1:ritlug1 /home/ritlug1/id_rsa.pub
-
-EXPOSE 8888
 
 # executes the ssh server at start
 ENTRYPOINT ["ssh-start"]
