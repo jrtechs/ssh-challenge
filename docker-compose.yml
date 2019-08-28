@@ -11,3 +11,7 @@ services:
     ssh2:
         build: ./sshBox2
         container_name: ssh2
+    ssh_python:
+        build: ./pythonSshServer
+        ports:
+            - "3333:3333"
