@@ -1,14 +1,88 @@
+//////////express server/library initalization
+const port = 7777;
+
 const express = require('express');
 
 const app = express();
 
-const port = 7777;
+/**session data for login and storing preferences*/
+const session = require('express-session');
 
-app.get('/', (req, res) =>
+/**Initializes sessions for login */
+app.use(session(
+    { secret: "private stuff for session seed or something",
+            cookie: { maxAge: 6000000 }}
+    ));
+
+
+//used for file io
+const fs = require('fs');
+
+
+/////////// express server/library initalization //////////////
+
+
+// quick and dirty routes for server //
+
+//add point to user
+app.post("/stonks", (request, result)=>
     {
-        res.send("Test Page");
+	if(!request.session.hasOwnProperty("score"))
+	{
+		request.session.score = 0;
+	}
+	request.session.score = request.session.score + 1;
+        result.end();
     });
 
+
+//set the score to zero
+app.post("/notStonks", (request, result)=>
+    {
+	request.session.score = 0;
+        result.send("Stonks :(");
+    });
+
+
+//check if user has over 100 points, display wining screen
+//else: tell them to play again
+app.get('/endGame', (req, res) =>
+    {
+
+	if(!req.session.hasOwnProperty("score"))
+	{
+		req.session.score = 0;
+	}
+	
+	console.log(req.session.score);
+	if(req.session.score > 100)
+	{
+		//fun zone
+		res.send("You win!");
+	}
+	else
+	{
+		res.write(fs.readFileSync("needHigherScore.html"));
+		res.end();
+		//res.send("You need a higher score ¯\_(ツ)_/¯");
+	}
+    });
+
+
+//prompt for login if not logged in
+//else: display the game thing
+app.get('/', (req, res) =>
+    {
+	res.write(fs.readFileSync("gamePage.html"));
+        res.end();
+    });
+
+// end routes //
+
+
+
+//launch express server
+app.use(express.static('img'));
 app.listen(port, () =>
     {
         console.log('Express server listening on port ${port}!');

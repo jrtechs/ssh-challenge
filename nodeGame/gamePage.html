@@ -1,0 +1,402 @@
+<html>
+<!-- @author Jeffery Russell 2017 -->
+<head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
+</head>
+
+<body>
+<script>
+    
+window.addEventListener("keydown", function(e)
+{
+    // space and arrow keys
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1)
+    {
+        e.preventDefault();
+    }
+}, false);
+
+window.onload = function()
+{
+    var canvas = document.getElementById("canvasZP");
+    var c = canvas.getContext('2d');
+    c.fillStyle= "black";
+    c.fillRect(0,0,canvas.width,canvas.height);
+};
+
+function sendStonks()
+{
+    $.ajax({
+        type:'POST',
+        url: "/stonks",
+        crossDomain: true,
+        dataType: "json",
+        timeout: 3000
+    });
+}
+
+
+function sendNotStonks()
+{
+    $.ajax({
+        type:'POST',
+        url: "/notStonks",
+        crossDomain: true,
+        dataType: "json",
+        timeout: 3000
+    });
+}
+
+
+function playZP()
+{
+    sendNotStonks();
+    var animate = window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame || function (callback)
+    {
+        window.setTimeout(callback, 1000 / 60)
+    };
+    var canvas = document.getElementById("canvasZP");
+    var width = 700;
+    var height = 700;
+    canvas.style.textAlign = 'center';
+    var context = canvas.getContext('2d');
+    var keysDown = {};
+
+
+    var score = 0;
+    var dead = false;
+    //player
+    var Player = function(x,y)
+    {
+        this.x = x;
+        this.y = y;
+        this.width = 25;
+        this.height = 25;
+
+        this.speed = 3;
+
+        this.facing = 40;
+
+        this.updateDirection = function(key)
+        {
+            facing = key;
+        }
+
+        this.render = function()
+        {
+            context.fillStyle = "rgba(0, 45, 160, 1)"; //green
+            context.fillRect(this.x, this.y, this.width,this.height);
+        }
+
+        this.move = function()
+        {
+            for (var key in keysDown)
+            {
+                var value = Number(key);
+                if (value == 37) //left
+                {
+                    this.x = this.x - this.speed;
+                }
+                else if (value == 39) //right
+                {
+                    this.x = this.x + this.speed
+                }
+                else if(value == 38) //up
+                {
+                    this.y = this.y - this.speed
+                }
+                else if(value == 40) //down
+                {
+                    this.y = this.y + this.speed
+                }
+                else if(value == 32)
+                {
+                    var added = false;
+
+                    for(i = 0; i< bullets.length; i++)
+                    {
+                        if(bullets[i] == -1)
+                        {
+                           bullets[i] = new Bullet();
+                           added = true;
+                           break;
+                        }
+                    }
+                    if(added == false)
+                        bullets.push(new Bullet());
+                }
+            }
+        }
+    }
+    var p = new Player(350, 350);
+
+
+    //bullet
+    var Bullet = function()
+    {
+        this.x = p.x;
+        this.y = p.y;
+        this.width = 10;
+        this.height = 10;
+
+        this.speed = 4;
+        this.facing = p.facing;
+
+
+        this.move = function()
+        {
+            if (this.facing == 37) //left
+                this.x = this.x - this.speed;
+            else if (this.facing == 39) //right
+                this.x = this.x + this.speed
+            else if(this.facing == 38) //up
+                this.y = this.y - this.speed
+            else if(this.facing == 40) //down
+                this.y = this.y + this.speed
+        }
+
+        this.render = function()
+        {
+            context.fillStyle = "rgba(255, 0, 199, 1)"; //green
+            context.fillRect(this.x, this.y, this.width,this.height);
+
+        }
+    }
+    var bullets = [];
+
+    function getRandomIntInclusive(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    //zombie
+    var Zombie = function(x,y)
+    {
+        this.x = x;
+        this.y = y;
+        this.width = 25;
+        this.height = 25;
+        this.speed = 3;
+
+        var side = getRandomIntInclusive(0,3);
+        var mid = getRandomIntInclusive(0,700);
+        if(side === 1)
+        {
+            this.x = mid;
+            this.y = 0;
+        }
+        else if(side === 2)
+        {
+            this.x = 700;
+            this.y = mid;
+        }
+        else if(side === 3)
+        {
+            this.y = 700;
+            this.x = mid;
+        }
+        else
+        {
+            this.x = 0;
+            this.y = mid;
+        }
+
+        this.render = function()
+        {
+            context.fillStyle = "rgba(0, 160, 0, 1)"; //green
+            context.fillRect(this.x, this.y, this.width,this.height);
+        }
+
+        this.move = function()
+        {
+            if(this.x  > p.x + this.speed)
+                this.x -= this.speed;
+            else if(this.x + this.speed < p.x )
+                this.x += this.speed;
+
+
+            if(this.y > p.y + this.speed)
+                this.y -= this.speed;
+            else if(this.y + this.speed < p.y )
+                this.y += this.speed;
+        }
+    }
+    var zombies = [];
+    zombies.push(new Zombie());
+
+
+    var render = function()
+    {
+        context.fillStyle = "#000000";
+        context.fillRect(0, 0, width, height);
+
+
+        context.fillStyle = "rgba(255, 255, 255, 1)";
+        context.font= "20px Georgia";
+        context.fillText("Score: " + score,10,25);
+        for(i = 0; i< zombies.length; i++)
+        {
+            if(zombies[i] != -1)
+            {
+                zombies[i].render();
+            }
+        }
+        for(i = 0; i< bullets.length; i++)
+        {
+            if(bullets[i] != -1)
+            {
+               bullets[i].render();
+            }
+        }
+        p.render();
+    }
+
+    var update = function()
+    {
+        addZombie();
+        p.move();
+
+        for(i = 0; i< zombies.length; i++)
+        {
+            for(z = 0;z < bullets.length; z++)
+            {
+                if(zombies[i] != -1 && bullets[z] != -1)
+                {
+                    if(Math.abs(zombies[i].x - bullets[z].x) < 25 &&
+                        Math.abs(zombies[i].y - bullets[z].y) < 25)
+                    {
+                        score++;
+                        zombies[i] = -1;
+                        bullets[z] = -1;
+			sendStonks()
+                    }
+                }
+            }
+
+            if(zombies[i] != -1)
+            {
+               zombies[i].move();
+            }
+        }
+        for(i = 0; i< bullets.length; i++)
+        {
+            //checks to see if goes out of bounds
+            if(bullets[i].x < 0 || bullets[i].y < 0 ||
+                bullets[i].x > 700 || bullets[i].y > 700)
+            {
+                bullets[i] = -1;
+            }
+
+            if(bullets[i] != -1)
+            {
+               bullets[i].move();
+            }
+        }
+
+        for(i=0; i<zombies.length; i++)
+        {
+            if(zombies[i] != -1 &&
+                Math.abs(p.x - zombies[i].x) < 25 &&
+                Math.abs(p.y - zombies[i].y) < 25)
+            {
+                dead = true;
+            }
+        }
+
+    }
+    var counter2 = 0;
+    var counter = 0;
+    var rate = 180;
+    var addZombie = function()
+    {
+        counter2++;
+        counter++;
+        var added = false;
+        if(counter >= rate)
+        {
+            for(i = 0; i< zombies.length; i++)
+            {
+                if(zombies[i] == -1)
+                {
+                   zombies[i] = new Zombie();
+                   added = true;
+                   break;
+                }
+
+            }
+
+            if(added == false)
+            {
+                zombies.push(new Zombie());
+            }
+
+            counter = 0;
+        }
+        if(counter2 >= 60)
+        {
+            if(rate > 30)
+            {
+                rate = rate -5;
+            }
+            counter2 = 0;
+        }
+    }
+
+    var deadForGood = false;
+    var tic = function()
+    {
+        if(dead)
+        {
+            context.fillStyle = "#000000";
+            context.fillRect(0, 0, width, height);
+
+            context.fillStyle = "rgba(255, 255, 255, 1)"; //green
+            context.font= "20px Georgia";
+            context.fillText("You died with a score of " + score,200,340);
+	
+	    if(!deadForGood)
+	    {		
+		deadForGood = true;
+		setTimeout(function()
+			{
+				location.replace("/endGame");
+			}, 2000);
+            }
+        }
+        else
+        {
+            update();
+            render()
+        }
+
+        animate(tic);
+    }
+
+    window.addEventListener("keydown", function (event)
+    {
+        if(event.keyCode >=37 && event.keyCode <=40)
+        {
+            p.facing = event.keyCode;
+        }
+
+        keysDown[event.keyCode] = true;
+    });
+
+    window.addEventListener("keyup", function (event)
+    {
+        delete keysDown[event.keyCode];
+    });
+    animate(tic);
+}
+
+</script>
+
+<div><canvas id="canvasZP" width="700" height="700"></canvas></div>
+<div><input type="submit" name="play" value="Play Game" onclick="
+this.blur();playZP()"/></div>
+
+</body>
+</html>
