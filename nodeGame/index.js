@@ -15,6 +15,12 @@ app.use(session(
     ));
 
 
+// makes working with post data easier
+const bodyParser = require('body-parser');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+
 //used for file io
 const fs = require('fs');
 
@@ -27,11 +33,11 @@ const fs = require('fs');
 //add point to user
 app.post("/stonks", (request, result)=>
     {
-	if(!request.session.hasOwnProperty("score"))
-	{
-		request.session.score = 0;
-	}
-	request.session.score = request.session.score + 1;
+	    if(!request.session.hasOwnProperty("score"))
+	    {
+		    request.session.score = 0;
+	    }
+	    request.session.score = request.session.score + 1;
         result.end();
     });
 
@@ -39,7 +45,7 @@ app.post("/stonks", (request, result)=>
 //set the score to zero
 app.post("/notStonks", (request, result)=>
     {
-	request.session.score = 0;
+	    request.session.score = 0;
         result.send("Stonks :(");
     });
 
@@ -49,23 +55,34 @@ app.post("/notStonks", (request, result)=>
 app.get('/endGame', (req, res) =>
     {
 
-	if(!req.session.hasOwnProperty("score"))
-	{
-		req.session.score = 0;
-	}
+	    if(!req.session.hasOwnProperty("score"))
+	    {
+		    req.session.score = 0;
+	    }
 	
-	console.log(req.session.score);
-	if(req.session.score > 100)
-	{
-		//fun zone
-		res.send("You win!");
-	}
-	else
-	{
-		res.write(fs.readFileSync("needHigherScore.html"));
-		res.end();
-		//res.send("You need a higher score ¯\_(ツ)_/¯");
-	}
+	    console.log(req.session.score);
+	    if(req.session.score > 100)
+	    {
+		    //fun zone
+		    console.log("Someone won the game");
+            res.write(fs.readFileSync("hint.html"));
+	    }
+	    else
+	    {
+		    res.write(fs.readFileSync("needHigherScore.html"));  
+        }
+        res.end();
+    });
+
+
+// sneaky login route
+app.post('/login', (req, res) =>
+    {
+        if(req.body.password == "ritlugFunziesPassword")
+        {
+            req.session.loggedIn = true;
+        }
+        res.redirect('/');
     });
 
 
@@ -73,7 +90,19 @@ app.get('/endGame', (req, res) =>
 //else: display the game thing
 app.get('/', (req, res) =>
     {
-	res.write(fs.readFileSync("gamePage.html"));
+        if(!req.session.hasOwnProperty("loggedIn"))
+        {
+            req.session.loggedIn = false;
+        }
+
+        if(req.session.loggedIn)
+        {
+            res.write(fs.readFileSync("gamePage.html"));
+        }
+        else
+        {
+            res.write(fs.readFileSync("login.html"));
+        }
         res.end();
     });
 
@@ -85,5 +114,5 @@ app.get('/', (req, res) =>
 app.use(express.static('img'));
 app.listen(port, () =>
     {
-        console.log('Express server listening on port ${port}!');
+        console.log('Express server listening on port ' + port);
     });
