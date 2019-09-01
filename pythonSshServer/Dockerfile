@@ -9,8 +9,7 @@
 
 FROM ubuntu
 
-ENV TERM xterm
-
+# Installs python and the dev libraries needed for paramiko
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python2.7 \
     && apt-get install -y python-dev \
@@ -19,12 +18,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# adds custom ssh server python code
 ADD ssh_server.py /
 ADD test_rsa.key /
 
+# installs pip dependencies
 RUN pip install paramiko \
     && pip install python-gssapi
 
-EXPOSE 3333
-
+# runs the python script
 CMD ["python", "./ssh_server.py"]

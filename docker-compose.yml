@@ -1,3 +1,15 @@
+# @author Jeffery Russell
+#
+# Docker-compose script to run the ssh
+# learning challege.
+#
+# Build:
+#   docker-compose build
+# Running
+#   docker-compose up
+#
+
+
 version: '3'
 
 services:
@@ -19,3 +31,8 @@ services:
         build: ./nodeGame
         ports:
             - "7777:7777"
+    nginx_server:
+        build: ./nginx
+        ports:
+            - "5555:22"
+            - "80:80"
