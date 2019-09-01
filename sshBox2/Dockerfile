@@ -34,6 +34,8 @@ RUN chmod 664 /home/ritlug2/.ssh/authorized_keys
 COPY ssh/* /home/ritlug2/.ssh
 
 
+RUN chmod 0555 /home/ritlug2/
+
 # executes the ssh server at start
 ENTRYPOINT ["ssh-start"]
 CMD ["ssh-server"]

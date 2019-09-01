@@ -25,7 +25,7 @@ RUN mkdir -p /var/run/sshd
 COPY bin/* /usr/local/bin/
 
 # Copies the hint into the home director of user
-COPY hint.md /home/ritlug1
+COPY hint.md /home/ritlug1/hint.md
 COPY ssh/* /home/ritlug1/
 
 RUN touch /home/ritlug1/id_rsa.pub
@@ -34,6 +34,9 @@ RUN chmod 600 /home/ritlug1/id_rsa
 RUN chmod 644 /home/ritlug1/id_rsa.pub
 RUN chown ritlug1:ritlug1 /home/ritlug1/id_rsa
 RUN chown ritlug1:ritlug1 /home/ritlug1/id_rsa.pub
+
+
+RUN chmod 0555 /home/ritlug1/
 
 EXPOSE 8888
 

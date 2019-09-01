@@ -131,8 +131,7 @@ def runClient(client):
 
         chan.send("Next hint:\r\n")
         chan.send("host: localhost  --on starting vm\r\n")
-        chan.send("port: 9999\r\n")
-        chan.send("password: wowie\r\n")
+        chan.send("key: ritlugFunziesPassword\r\n")
         chan.send("hint: there is a remote web-server running on port 7777\r\n")
 
     except Exception as e:
