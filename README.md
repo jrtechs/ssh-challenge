@@ -1,3 +1,86 @@
+# Answers to the Challenge
+
+
+![key diagram](key.png)
+
+## 1 Basic SSH
+
+SSH into main VM with given username and password.
+
+```
+ssh ritlug@demo.ritlug.com
+```
+
+## 2 SSH With Different Port
+
+SSH into container on the main VM with a different port.
+
+```
+# on main connection(demo.ritlug.com)
+ssh ritlug1@localhost -p 8888
+```
+
+## 3 SSH With Key File
+
+While in the first container, ssh into another container with a key file.
+
+```
+# on ritlug1@localhost connection
+ssh ritlug2@ssh2 -i id_rsa
+```
+
+
+## 4 SSH into Custom SSH Python Server
+
+SSH into a VM and answer questions about RITlug.
+
+```
+# on main ssh connection
+ssh ritlug4@localhost -p 3333
+```
+
+## 5 Access and Play and Hack Game on Internal Web Server
+
+Forward localhost:someport to remote the remote machine's localhost:7777 so you can access the website on your computer.
+
+
+```
+# On your computer
+ssh -L 7777:localhost:7777 ritlug@demo.ritlug.com
+```
+
+Open web browser and play the game....
+The game is way to hard to win; hack it!
+
+There are many ways to hack this basic Javascript game, but, the most basic is to just tell the server that you are scoring a ton of points and then navigate to the /endgame page. 
+
+
+```javascript
+//run this in the console of the game or end game page
+for(var i = 0; i < 500; i++)
+{
+	console.log("Sending stonks.");
+	$.ajax({
+		type:'POST',
+		url: "/stonks",
+		crossDomain: true,
+		dataType: "json",
+		timeout: 3000
+	});
+}
+```
+
+## 6 Forward Local Web Server to Remote Host
+
+```
+# forward the ssh port of the remote machine to your local computer.
+ssh -L 5555:localhost:5555 ritlug@demo.ritlug.com
+
+# forward your web server to the remote machine
+ssh ritlug6@localhost -p 5555 -R 4444:localhost:8989
+```
+
+
 # Installation and Running on Debian VM
 
 ## Install Docker
