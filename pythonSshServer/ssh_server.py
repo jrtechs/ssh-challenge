@@ -120,7 +120,7 @@ def runClient(client):
             return
         chan.send("\r\nCorrect!\r\n")
 
-        chan.send("URL where you can download TogerOS: ")
+        chan.send("URL where you can download TigerOS: ")
         tigerOSMirror = str(f.readline().strip("\r\n"))
 
         if "mirrors.ritlug.com" not in tigerOSMirror.lower():
