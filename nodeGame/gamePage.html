@@ -24,6 +24,8 @@ window.onload = function()
     c.fillRect(0,0,canvas.width,canvas.height);
 };
 
+
+//increments score on server
 function sendStonks()
 {
     $.ajax({
@@ -36,6 +38,7 @@ function sendStonks()
 }
 
 
+//resets score on server
 function sendNotStonks()
 {
     $.ajax({
@@ -86,7 +89,7 @@ function playZP()
 
         this.render = function()
         {
-            context.fillStyle = "rgba(0, 45, 160, 1)"; //green
+            context.fillStyle = "rgba(188, 19, 254, 1)"; //purple
             context.fillRect(this.x, this.y, this.width,this.height);
         }
 
@@ -357,13 +360,13 @@ function playZP()
             context.font= "20px Georgia";
             context.fillText("You died with a score of " + score,200,340);
 	
-	    if(!deadForGood)
-	    {		
-		deadForGood = true;
-		setTimeout(function()
-			{
-				location.replace("/endGame");
-			}, 2000);
+	        if(!deadForGood)
+	        {		
+		        deadForGood = true;
+		        setTimeout(function()
+			    {
+				    location.replace("/endGame");
+			    }, 2000);
             }
         }
         else
@@ -393,6 +396,15 @@ function playZP()
 }
 
 </script>
+
+
+<div>
+    <h3>Instructions:</h3>
+    <p>
+        Arrow keys/wasd to move and space key to shoot.
+    </p>
+</div>
+
 
 <div><canvas id="canvasZP" width="700" height="700"></canvas></div>
 <div><input type="submit" name="play" value="Play Game" onclick="
