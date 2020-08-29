@@ -7,7 +7,7 @@
 
 # @author Jeffyer Russell 8-27-19
 
-FROM ubuntu
+FROM ubuntu:18.04
 
 # Installs python and the dev libraries needed for paramiko
 RUN apt-get update && apt-get install -y --no-install-recommends \
